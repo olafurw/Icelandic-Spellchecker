@@ -20,13 +20,11 @@ public class Application extends Controller
         try
         {
             // Get the spellchecker
+	    SentenceParser parser = new SentenceParser(params.get("spelling"));
             Spellcheck spell = new Spellcheck();
 
-            // Get the argument
-            String toCheck = params.get("spelling");
-
             // Make the checker do it's work
-            ArrayList<CheckedWord> checkedWords = spell.check(spell.classify(toCheck));
+            ArrayList<CheckedWord> checkedWords = spell.check(parser.parse());
 
             // Send the results to the view
             renderArgs.put("checkedWords", checkedWords);
