@@ -1,0 +1,17 @@
+#{extends 'main.html' /}
+#{set title:'Villuleit' /}
+
+#{list items:checkedWords, as:'words' }
+    #{if words.getType().toString() == 'WORD' }
+	#{ifnot words.isCorrect()}
+	    <span style="color:#FF0000">
+	#{/ifnot}
+	    ${words.getWord()}
+	#{ifnot words.isCorrect()}
+	    </span>
+	#{/ifnot}
+    #{/if}
+    #{if words.getType().toString() == 'NEWLINE' }
+	<br />
+    #{/if}
+#{/list}
