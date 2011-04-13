@@ -94,32 +94,39 @@ public class Spellcheck
 	ArrayList<CheckedWord> classified = new ArrayList<CheckedWord>();
 
 	// Split by space
-	//String[] articleSplit = article.split("(?!^)\\b");
-	StringTokenizer st = new StringTokenizer(article, "[ \t\n]", true);
+	StringTokenizer st = new StringTokenizer(article, "[ \t\n.,]", true);
 
 	CheckedWord.Type type = CheckedWord.Type.UNKNOWN;
 	String word;
 
-	while (st.hasMoreTokens())
+	while(st.hasMoreTokens())
 	{
 	    // Get the next token
 	    word = st.nextToken();
 
-	    // Words dont have numbers!
-	    if (word.equals(" "))
+	    // Get the space
+	    if(word.equals(" "))
 	    {
 		type = CheckedWord.Type.SPACE;
 	    }
-	    else if (word.equals("\n"))
+	    // Get the newline
+	    else if(word.equals("\n"))
 	    {
 		type = CheckedWord.Type.NEWLINE;
 	    }
-	    else if (hasNumber(word))
+	    // Dot or the comma
+	    else if(word.equals(".") || word.equals(","))
+	    {
+		type = CheckedWord.Type.PUNCTUATION;
+	    }
+	    // Words with numbers in them
+	    else if(hasNumber(word))
 	    {
 		type = CheckedWord.Type.NUMBER;
 	    }
 	    else
 	    {
+		// Now we might have a word
 		type = CheckedWord.Type.WORD;
 	    }
 
@@ -132,9 +139,9 @@ public class Spellcheck
     // Returns true if the word has a number in it
     private boolean hasNumber(String word)
     {
-	for (int i = 0; i < word.length(); i++)
+	for(int i = 0; i < word.length(); i++)
 	{
-	    if (Character.isDigit(word.charAt(i)))
+	    if(Character.isDigit(word.charAt(i)))
 	    {
 		return true;
 	    }
@@ -148,19 +155,19 @@ public class Spellcheck
     {
 	int index = 0;
 
-	for (CheckedWord word : toCheck)
+	for(CheckedWord word : toCheck)
 	{
 	    // If it is classified as a word
-	    if (word.getType() == CheckedWord.Type.WORD)
+	    if(word.getType() == CheckedWord.Type.WORD)
 	    {
 		// If the word is not correctly spelled, then we find similar words
-		if (!isCorrect(word.getWord()))
+		if(!isCorrect(word.getWord()))
 		{
 		    wrong++;
 
 		    // If the word is not in the wordmap and not in the common words list
 		    // Then add it as a false word so we dont need to do a sql check again
-		    if (!wordMap.containsKey(word) && !commonWords.contains(word))
+		    if(!wordMap.containsKey(word) && !commonWords.contains(word))
 		    {
 			wordMap.put(word.getWord(), false);
 		    }
@@ -184,7 +191,7 @@ public class Spellcheck
 
 		    // If the word is not in the wordmap and not in the common words list
 		    // Then add it as a false word so we dont need to do a sql check again
-		    if (!wordMap.containsKey(word) && !commonWords.contains(word))
+		    if(!wordMap.containsKey(word) && !commonWords.contains(word))
 		    {
 			wordMap.put(word.getWord(), true);
 		    }
@@ -204,19 +211,19 @@ public class Spellcheck
 	    Class.forName("com.mysql.jdbc.Driver").newInstance();
 	    conn = DriverManager.getConnection(prop.getProperty("database"), prop.getProperty("user"), prop.getProperty("password"));
 	}
-	catch (SQLException e)
+	catch(SQLException e)
 	{
 	    throw new SpellConnectionException("SQL Exception: " + e.getMessage());
 	}
-	catch (InstantiationException e)
+	catch(InstantiationException e)
 	{
 	    throw new SpellConnectionException("Instance Exception: " + e.getMessage());
 	}
-	catch (IllegalAccessException e)
+	catch(IllegalAccessException e)
 	{
 	    throw new SpellConnectionException("Illegal access Exception: " + e.getMessage());
 	}
-	catch (ClassNotFoundException e)
+	catch(ClassNotFoundException e)
 	{
 	    throw new SpellConnectionException("Class not found Exception: " + e.getMessage());
 	}
@@ -238,12 +245,12 @@ public class Spellcheck
 
 	// Add the sorted list to the vector
 	// Limit of 10, this will change
-	for (String words : sorted_vec.keySet())
+	for(String words : sorted_vec.keySet())
 	{
 	    i++;
 	    ret.add(words);
 
-	    if (i == 10)
+	    if(i == 10)
 	    {
 		break;
 	    }
@@ -256,14 +263,14 @@ public class Spellcheck
     private boolean isCorrect(String word)
     {
 	// First we check if it is in the list of common words
-	if (commonWords.contains(word))
+	if(commonWords.contains(word))
 	{
 	    return true;
 	}
 
 	// Then we check the hash map for the word
 	// If there is a hash map for the word, return the boolean value stored there
-	if (wordMap.containsKey(word))
+	if(wordMap.containsKey(word))
 	{
 	    return wordMap.get(word);
 	}
@@ -277,12 +284,12 @@ public class Spellcheck
 	    ResultSet rs = stmt.executeQuery();
 
 	    // If there is one value, return it
-	    if (rs.next())
+	    if(rs.next())
 	    {
 		return rs.getBoolean(1);
 	    }
 	}
-	catch (SQLException e)
+	catch(SQLException e)
 	{
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -300,7 +307,7 @@ public class Spellcheck
 	    stmt.setString(1, word);
 	    stmt.execute();
 	}
-	catch (SQLException e)
+	catch(SQLException e)
 	{
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -322,13 +329,13 @@ public class Spellcheck
 
 	    ResultSet rs = stmt.executeQuery();
 
-	    while (rs.next())
+	    while(rs.next())
 	    {
 		String ord = rs.getString("ord");
 		vec.put(rs.getString("ord"), LevenshteinDistance.distance(word, ord));
 	    }
 	}
-	catch (SQLException e)
+	catch(SQLException e)
 	{
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -344,11 +351,11 @@ public class Spellcheck
 	// Used to note how far into the splitting we are
 	int progress = 0;
 
-	while (progress < word.length())
+	while(progress < word.length())
 	{
 	    int longestMatch = getLongestMatch2(word.substring(progress));
 
-	    if (longestMatch < 1)
+	    if(longestMatch < 1)
 	    {
 		return false;
 	    }
@@ -369,15 +376,15 @@ public class Spellcheck
 	// Used to store the longest correct segment of the word
 	int longestCorrect = 0;
 
-	while (vowelIndex > -1)
+	while(vowelIndex > -1)
 	{
 	    String syllable = word.substring(startIndex, vowelIndex + 1);
 
 	    // If the syllable is correct
-	    if (isCorrect(syllable))
+	    if(isCorrect(syllable))
 	    {
 		// And the length of it is longer than the last one, then we add that length
-		if ((vowelIndex + 1) > longestCorrect)
+		if((vowelIndex + 1) > longestCorrect)
 		{
 		    longestCorrect = vowelIndex + 1;
 		}
@@ -394,9 +401,9 @@ public class Spellcheck
     {
 	int longestMatch = 0;
 
-	for (int i = 2; i <= word.length(); i++)
+	for(int i = 2; i <= word.length(); i++)
 	{
-	    if (isCorrect(word.substring(0, i)))
+	    if(isCorrect(word.substring(0, i)))
 	    {
 		longestMatch = i;
 	    }
@@ -415,13 +422,13 @@ public class Spellcheck
 	int currentIndex = 0;
 
 	// For every vowel
-	for (int i = 0; i < vowels.length(); i++)
+	for(int i = 0; i < vowels.length(); i++)
 	{
 	    // Find it within the word
 	    currentIndex = word.indexOf(vowels.charAt(i), offset + 1);
 
 	    // Find the shortest index
-	    if ((shortestIndex == -1 && currentIndex > -1) || (currentIndex > -1 && currentIndex < shortestIndex))
+	    if((shortestIndex == -1 && currentIndex > -1) || (currentIndex > -1 && currentIndex < shortestIndex))
 	    {
 		shortestIndex = currentIndex;
 	    }
@@ -434,7 +441,7 @@ public class Spellcheck
     private String getSearchSoundex(String sx)
     {
 	// If we have a short soundex, then we'll use it
-	if (sx.length() < 8)
+	if(sx.length() < 8)
 	{
 	    return sx;
 	}
@@ -448,55 +455,55 @@ public class Spellcheck
 
 	char[] charArr = word.toLowerCase().toCharArray();
 
-	for (int i = 0; i < charArr.length; i++)
+	for(int i = 0; i < charArr.length; i++)
 	{
-	    if (charArr[i] == 'á')
+	    if(charArr[i] == 'á')
 	    {
 		sb.append('a');
 	    }
-	    else if (charArr[i] == 'é')
+	    else if(charArr[i] == 'é')
 	    {
 		sb.append('e');
 	    }
-	    else if (charArr[i] == 'í')
+	    else if(charArr[i] == 'í')
 	    {
 		sb.append('i');
 	    }
-	    else if (charArr[i] == 'ú')
+	    else if(charArr[i] == 'ú')
 	    {
 		sb.append('u');
 	    }
-	    else if (charArr[i] == 'ý')
+	    else if(charArr[i] == 'ý')
 	    {
 		sb.append('y');
 	    }
-	    else if (charArr[i] == 'ð')
+	    else if(charArr[i] == 'ð')
 	    {
 		sb.append('d');
 	    }
-	    else if (charArr[i] == 'ó')
+	    else if(charArr[i] == 'ó')
 	    {
 		sb.append('o');
 	    }
-	    else if (charArr[i] == 'ö')
+	    else if(charArr[i] == 'ö')
 	    {
 		sb.append('o');
 	    }
-	    else if (charArr[i] == 'æ')
+	    else if(charArr[i] == 'æ')
 	    {
 		sb.append("ae");
 	    }
-	    else if (charArr[i] == 'þ')
+	    else if(charArr[i] == 'þ')
 	    {
 		sb.append("th");
 	    }
-	    else if (charArr[i] == '.')
+	    else if(charArr[i] == '.')
 	    {
 	    }
-	    else if (charArr[i] == '/')
+	    else if(charArr[i] == '/')
 	    {
 	    }
-	    else if (charArr[i] == '-')
+	    else if(charArr[i] == '-')
 	    {
 	    }
 	    else
@@ -523,7 +530,7 @@ public class Spellcheck
 
 	    System.out.println("Staring vec");
 
-	    while (rs.next())
+	    while(rs.next())
 	    {
 		String ord = rs.getString("ord");
 
@@ -537,7 +544,7 @@ public class Spellcheck
 
 	    Statement update;
 
-	    for (String orginal : vec.keySet())
+	    for(String orginal : vec.keySet())
 	    {
 		count++;
 		try
@@ -549,12 +556,12 @@ public class Spellcheck
 		    update.execute("UPDATE `ordmyndir` SET `soundex` = '" + ssx + "'  WHERE `ord` = '" + orginal + "'");
 		    update.close();
 
-		    if (count % 10000 == 0)
+		    if(count % 10000 == 0)
 		    {
 			System.out.println(count);
 		    }
 		}
-		catch (ArrayIndexOutOfBoundsException aioobex)
+		catch(ArrayIndexOutOfBoundsException aioobex)
 		{
 		    System.out.println(aioobex.getMessage());
 		    System.out.println(aioobex.getCause());
@@ -565,7 +572,7 @@ public class Spellcheck
 
 	    stmt.close();
 	}
-	catch (SQLException e)
+	catch(SQLException e)
 	{
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -576,7 +583,7 @@ public class Spellcheck
     {
 	Iterator<?> it = wordMap.entrySet().iterator();
 
-	while (it.hasNext())
+	while(it.hasNext())
 	{
 	    Map.Entry<String, Boolean> pair = (Map.Entry<String, Boolean>) it.next();
 
@@ -592,7 +599,7 @@ public class Spellcheck
 	String line;
 
 	// For every line in the file, append it to the string builder
-	while ((line = reader.readLine()) != null)
+	while((line = reader.readLine()) != null)
 	{
 	    builder.append(line + "\n");
 	}

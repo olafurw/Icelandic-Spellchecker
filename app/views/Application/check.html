@@ -11,7 +11,10 @@
 	    </span>
 	#{/ifnot}
     #{/if}
-    #{if words.getType().toString() == 'NEWLINE' }
+    #{elseif words.getType().toString() == 'NEWLINE' }
 	<br />
-    #{/if}
+    #{/elseif}
+    #{else}
+	${words.getWord()}
+    #{/else}
 #{/list}

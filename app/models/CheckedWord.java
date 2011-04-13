@@ -6,7 +6,7 @@ public class CheckedWord
 {
     public static enum Type
     {
-	WORD, NUMBER, SPACE, NEWLINE, UNKNOWN
+	WORD, NUMBER, SPACE, NEWLINE, PUNCTUATION , UNKNOWN
     };
     private String word;
     private boolean correct;
