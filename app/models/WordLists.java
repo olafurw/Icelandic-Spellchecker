@@ -37,5 +37,6 @@ public class WordLists
 	commonWords.add("sem");
 	commonWords.add("hafa");
 	commonWords.add("eða");
+	commonWords.add("yfir");
     }
 }

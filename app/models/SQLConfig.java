@@ -1,6 +1,7 @@
 package models;
 
 import java.util.Properties;
+import java.io.File;
 import java.io.FileInputStream;
 
 public class SQLConfig
@@ -12,14 +13,12 @@ public class SQLConfig
 	try
 	{
 	    prop = new Properties();
-	    prop.load(new FileInputStream("../config.ini"));
+	    prop.load(new FileInputStream("config.ini"));
 	}
 	catch(Exception ex)
 	{
 	    System.out.println(ex.getMessage());
 	}
-
-	System.out.println(prop);
     }
 
     public String getDriver()

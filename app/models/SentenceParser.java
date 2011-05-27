@@ -10,6 +10,8 @@ public class SentenceParser
     public SentenceParser(String sentence)
     {
 	this.sentence = sentence;
+
+	System.out.println(this.sentence);
     }
 
     // Takes in a string of words and classifies each word
@@ -19,7 +21,7 @@ public class SentenceParser
 	ArrayList<CheckedWord> classified = new ArrayList<CheckedWord>();
 
 	// Split by space
-	StringTokenizer st = new StringTokenizer(sentence, "[ \t\n.,]", true);
+	StringTokenizer st = new StringTokenizer(sentence, "[ \t\n.,„“\"\']", true);
 
 	CheckedWord.Type type = CheckedWord.Type.UNKNOWN;
 	String word;
@@ -49,10 +51,18 @@ public class SentenceParser
 	    {
 		type = CheckedWord.Type.NUMBER;
 	    }
+	    // First character is not a letter, then we have no idea.
+	    else if(!Character.isLetter(word.charAt(0)))
+	    {
+		type = CheckedWord.Type.UNKNOWN;
+	    }
 	    else
 	    {
 		// Now we might have a word
 		type = CheckedWord.Type.WORD;
+
+		// We trim words, since stuff tends to sick in there
+		word = word.trim();
 	    }
 
 	    classified.add(new CheckedWord(word, type));

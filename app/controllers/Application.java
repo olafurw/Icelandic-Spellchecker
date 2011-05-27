@@ -24,10 +24,14 @@ public class Application extends Controller
             Spellcheck spell = new Spellcheck();
 
             // Make the checker do it's work
-            ArrayList<CheckedWord> checkedWords = spell.check(parser.parse());
+            ArrayList<String> wrongWords = spell.check(parser.parse());
+
+	    // Use the wrong words list to generate the html
+	    ResultGenerator generator = new ResultGenerator(params.get("spelling"), wrongWords);
+	    String resultHTML = generator.createHTML();
 
             // Send the results to the view
-            renderArgs.put("checkedWords", checkedWords);
+            renderArgs.put("resultHTML", resultHTML);
             render();
         }
 
